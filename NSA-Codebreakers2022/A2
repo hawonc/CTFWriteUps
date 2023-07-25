@@ -1,0 +1,20 @@
+Using the timestamp and IP address information from the VPN log, the FBI was able to identify a virtual server that the attacker used for staging their attack. They were able to obtain a warrant to search the server, but key files used in the attack were deleted.
+
+Luckily, the company uses an intrusion detection system which stores packet logs. They were able to find an SSL session going to the staging server, and believe it may have been the attacker transferring over their tools.
+
+The FBI hopes that these tools may provide a clue to the attacker's identity
+
+
+Files:
+root/ - Files captured from root's home directory on the staging server (extracted from root.tar.bz2) - (root/.local and root/.cache removed)
+.cert.pem - Certificate for the SSL session
+session.pcap - PCAP file believed to be of the attacker downloading their tools
+tools/ - The tools the attackers transferred.
+
+Writeup
+
+So we're given some files off the attackers machine, there we can find .cert.pem which we can use to decrypt the SSL session. Once we open session.pcap in wireshark, we discover it to be simple TLS traffic which we assume is encrypted by the provided key.
+
+After opening up the packet capture in Wireshark, I followed a guide on its wiki to add the RSA private key in .cert.pem to allow the TLS traffic to be decrypted (by going to Edit -> Preferences -> RSA Keys -> Add New Keyfile).
+
+Looking at the decrypted traffic gives us a weird combination of words, AheadProudGlut which seems like a username enough, giving us the answer.
